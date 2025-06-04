@@ -1,0 +1,106 @@
+[MASTER]
+# Specify a list of plugins to load by their module name.
+# load-plugins=
+# init-hook='import sys; print(f"Pylint sys.path: {sys.path}", file=sys.stderr)'
+ignore-patterns=src/rebaser/generated/app_resources_rc.py
+source-roots=src # Keep your source-roots from earlier if you have them
+extension-pkg-whitelist=PySide6
+
+[MESSAGES CONTROL]
+# Disable the given extension messages.
+# disable=
+
+# Enable the given extension messages.
+# enable=
+
+[REPORTS]
+# Set the output format. Can be 'text', 'parseable', 'json', 'colorized', 'msvs'
+# (visual studio) or 'html'.
+# output-format=text
+
+[MISCELLANEOUS]
+# List of members which are always considered to be set.
+# additional-builtins=
+
+[FORMAT]
+# Maximum number of characters on a line (default: 100).
+max-line-length=100
+
+[TYPECHECK]
+# List of members which are always set.
+# generated-members=
+
+[DESIGN]
+# Maximum number of arguments for function / method (default: 5).
+max-args=7
+
+# Maximum number of local variables for function / method (default: 15).
+max-locals=15
+
+# Maximum number of statements in function / method (default: 50).
+max-statements=90
+
+# Maximum number of branches in function / method body (default: 12).
+max-branches=15
+
+
+# Maximum number of attributes for a class (default: 7).
+max-attributes=15
+
+# Maximum number of public methods for a class (default: 20).
+max-public-methods=25
+
+# Minimum number of public methods for a class (default: 2).
+min-public-methods=1
+
+[IMPORTS]
+# Maximum number of imports per module (default: 20).
+# max-imports=20
+
+[VARIABLES]
+# List of names that are allowed to be unused.
+# unused-variable-names=
+
+[CLASSES]
+# List of names that are allowed to be unused.
+# unused-class-names=
+
+[FUNCTIONS]
+# List of names that are allowed to be unused.
+# unused-function-names=
+
+[METHOD_ARGS]
+# List of names that are allowed to be unused.
+# unused-method-args=
+
+[SIMILARITIES]
+# Minimum lines number of similar code to be reported (default: 4).
+min-similarity-lines=4
+
+[BASIC]
+# Regular expression for variable names.
+variable-rgx=[a-z_][a-z0-9_]{2,30}$
+
+# Regular expression for function names.
+function-rgx=[a-z_][a-z0-9_]{2,30}$
+
+# Regular expression for method names.
+method-rgx=[a-z_][a-z0-9_]{2,30}$
+
+# Regular expression for class names.
+class-rgx=[A-Z_][a-zA-Z0-9_]{2,30}$
+
+# Regular expression for constant names.
+const-rgx=[A-Z_][A-Z0-9_]{2,30}$
+
+# Regular expression for argument names.
+argument-rgx=[a-z_][a-z0-9_]{2,30}$
+
+# Regular expression for module names.
+module-rgx=([a-z_][a-z0-9_]*)$
+
+# Regular expression for attribute names.
+attr-rgx=[a-z_][a-z0-9_]{2,30}$
+
+# Regular expression for type variable names.
+typevar-rgx=[A-Z_][a-zA-Z0-9_]{2,30}$
