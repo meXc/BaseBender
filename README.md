@@ -2,6 +2,8 @@
 
 This project provides a Python module for rebaseing strings between different digit sets (positional number systems). It also includes a command-line interface (CLI) for easy usage.
 
+![Screenshot of the GUI. Shows example conversion](./docs/gui-main.png)
+
 ## Project Goal
 n
 The primary goal is to provide a flexible and efficient tool for rebaseing numbers between different digit sets.
