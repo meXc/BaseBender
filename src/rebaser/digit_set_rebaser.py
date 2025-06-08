@@ -7,7 +7,7 @@ strings from an input digit set to an output digit set, supporting dynamic
 derivation of the input digit set and various rebase operations.
 """
 
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 
 from .models import DigitSet
 
@@ -241,75 +241,6 @@ class DigitSetRebaser:
 
         return "".join(reversed(result_chars))
 
-    def string_to_integer_and_bytes(
-        self,
-        input_string: str,
-        source_digit_set_map: Dict[str, int],
-        source_digit_set_list: List[str],
-    ) -> Tuple[bytes, int]:
-        """
-        Converts an input string from its source digit set to an integer,
-        and then represents that integer as a byte array.
-
-        Args:
-            input_string: The string to convert.
-            source_digit_set_map: Mapping of characters to positions for the source digit set.
-            source_digit_set_list: Ordered list of characters for the source digit set.
-
-        Returns:
-            A tuple containing:
-            - bytes: The integer value represented as a little-endian byte array.
-            - int: The bit length of the integer value.
-        """
-        base1 = len(source_digit_set_list)
-        if base1 == 0:
-            return b"", 0
-
-        integer_value = self.string_to_int_from_base(
-            input_string, source_digit_set_map, base1
-        )
-
-        if integer_value == 0:
-            return b"\x00", 0
-
-        num_bytes = (integer_value.bit_length() + 7) // 8
-        if num_bytes == 0:
-            num_bytes = 1
-
-        byte_array = integer_value.to_bytes(num_bytes, byteorder="little")
-
-        return byte_array, integer_value.bit_length()
-
-    def integer_bytes_to_string(
-        self, binary_array: bytes, target_digit_set_list: List[str]
-    ) -> str:
-        """
-        Converts a byte array (representing an integer) back into an integer,
-        and then rebasees that integer into a string representation using the
-        target digit set's base.
-
-        Args:
-            binary_array: The little-endian byte array representing the integer.
-            target_digit_set_list: Ordered list of characters for the target digit set.
-
-        Returns:
-            The string representation of the integer in the target digit set.
-        """
-        base2 = len(target_digit_set_list)
-        if base2 == 0:
-            return ""
-
-        if not binary_array:
-            integer_value = 0
-        else:
-            integer_value = int.from_bytes(binary_array, byteorder="little")
-
-        output_string = self.int_to_string_in_base(
-            integer_value, target_digit_set_list, base2
-        )
-
-        return output_string
-
     def rebase(self, input_string: str) -> str:
         """
         Rebases the input string from its determined input digit set to the
@@ -384,13 +315,19 @@ class DigitSetRebaser:
                 self._out_digit_set_list[0] if self._out_digit_set_list else ""
             )
 
+        # If the output digit set is empty, return an empty string
+        if not self._out_digit_set_list:
+            return ""
+
         # Perform the full rebase
-        intermediate_byte_array, _ = self.string_to_integer_and_bytes(
+        integer_value = self.string_to_int_from_base(
             input_string,
             effective_input_digit_set_map,
-            effective_input_digit_set_list,
+            len(effective_input_digit_set_list),
         )
-        final_rebased_string = self.integer_bytes_to_string(
-            intermediate_byte_array, self._out_digit_set_list
+        final_rebased_string = self.int_to_string_in_base(
+            integer_value,
+            self._out_digit_set_list,
+            len(self._out_digit_set_list),
         )
         return final_rebased_string
