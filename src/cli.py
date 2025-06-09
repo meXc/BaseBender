@@ -13,10 +13,10 @@ from typing import Optional
 
 import uvicorn
 
-from gui.main_window import run_gui  # Moved from conditional import
-from rebaser.digit_set_rebaser import DigitSetRebaser
-from rebaser.digit_sets import get_predefined_digit_sets, suggest_digit_sets
-from rebaser.models import DigitSet
+from src.gui.main_window import run_gui  # Moved from conditional import
+from src.rebaser.digit_set_rebaser import DigitSetRebaser
+from src.rebaser.digit_sets import get_predefined_digit_sets, suggest_digit_sets
+from src.rebaser.models import DigitSet
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
@@ -213,7 +213,7 @@ def main() -> None:
         run_gui()
     elif args.api:
         # Ensure the API module is importable from the current directory
-        uvicorn.run("api.main:APP", host="0.0.0.0", port=8000, reload=True)
+        uvicorn.run("src.api.main:APP", host="0.0.0.0", port=8000, reload=True)
     elif args.list_digit_sets:
         exit_code = list_digit_sets_cli()
     elif args.suggest_digit_sets:

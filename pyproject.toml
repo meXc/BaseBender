@@ -1,7 +1,7 @@
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 [project]
-name = "rebaser"
+name = "basebender"
 version = "0.1.0"
 description = "A Python module for rebaseing strings between different digit sets (positional number systems)."
 authors = [
@@ -21,22 +21,21 @@ dependencies = [
 
 [tool.poetry]
 
-[[tool.poetry.packages]]
-include = "rebaser"
-from = "src"
+packages = [{ include = "src" }]
 
-[[tool.poetry.packages]]
-include = "api"
-from = "src"
+include = [
+    "src/rebaser/generated/app_resources_rc.py"
+]
 
-[[tool.poetry.packages]]
-include = "gui"
-from = "src"
+
+[tool.poetry.build]
+script = "bin/generate_resources.py"
+
 
 [tool.poetry.scripts]
-basebender = "src.cli:main"
-basebender-gui = "src.gui.main_window:run_gui"
-basebender-api = "src.api.main:start_api"
+basebender = "cli:main"
+basebender-gui = "gui.main_window:run_gui"
+basebender-api = "api.main:start_api"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.5"

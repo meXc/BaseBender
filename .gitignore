@@ -18,6 +18,4 @@ venv/
 *.tmp
 # Temporary generated reports
 /reports/**/*
-# Generated source files
-/src/rebaser/generated/**/*
-!/src/rebaser/generated/STRUCTURE.md
+/dist/

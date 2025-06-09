@@ -30,11 +30,11 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from rebaser.config_loader import load_ui_state, save_ui_state
-from rebaser.digit_set_rebaser import DigitSetRebaser
-from rebaser.digit_sets import get_predefined_digit_sets
-from rebaser.generated import app_resources_rc
-from rebaser.models import DigitSet
+from src.rebaser.config_loader import load_ui_state, save_ui_state
+from src.rebaser.digit_set_rebaser import DigitSetRebaser
+from src.rebaser.digit_sets import get_predefined_digit_sets
+from src.rebaser.generated import app_resources_rc
+from src.rebaser.models import DigitSet
 
 ICON_INPUT_QRC_PATH = ":/app/icons/input.svg"
 ICON_OUTPUT_QRC_PATH = ":/app/icons/output.svg"
