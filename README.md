@@ -42,6 +42,27 @@ The primary goal is to provide a flexible and efficient tool for rebaseing numbe
     ```bash
     ./bin/update
     ```
+## Running the Application
+
+This project provides several entry points for different interfaces: a command-line interface (CLI), a graphical user interface (GUI), and a web API. You can run them using Poetry scripts:
+
+*   **Command-Line Interface (CLI)**:
+    ```bash
+    poetry run basebender --help
+    ```
+    This will display the help message for the CLI. For detailed usage examples, refer to [CLI Examples](docs/cli_examples.md).
+
+*   **Graphical User Interface (GUI)**:
+    ```bash
+    poetry run basebender-gui
+    ```
+    This will launch the desktop application.
+
+*   **Web API**:
+    ```bash
+    poetry run basebender-api
+    ```
+    This will start the FastAPI server, typically accessible at `http://127.0.0.1:8000`. For detailed API usage examples, refer to [API Examples](docs/api_examples.md).
 
 ## Configuration
 
