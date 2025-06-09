@@ -20,3 +20,4 @@ venv/
 /reports/**/*
 # Generated source files
 /src/rebaser/generated/**/*
+!/src/rebaser/generated/STRUCTURE.md
