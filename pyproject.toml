@@ -35,6 +35,8 @@ from = "src"
 
 [tool.poetry.scripts]
 basebender = "src.cli:main"
+basebender-gui = "src.gui.main_window:run_gui"
+basebender-api = "src.api.main:start_api"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.5"

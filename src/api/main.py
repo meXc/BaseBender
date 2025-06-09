@@ -7,6 +7,7 @@ between different digit sets.
 
 from typing import Dict, List, Optional
 
+import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
@@ -261,3 +262,10 @@ async def rebase_text(request: RebaseRequest) -> RebaseResponse:
         target_digit_set_used=target_digit_set_name,
         error=error_response,
     )
+
+
+def start_api() -> None:
+    """
+    Starts the FastAPI server using uvicorn.
+    """
+    uvicorn.run("api.main:APP", host="0.0.0.0", port=8000, reload=True)
