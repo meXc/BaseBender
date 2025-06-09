@@ -37,6 +37,12 @@ The primary goal is to provide a flexible and efficient tool for rebaseing numbe
     ```
     This will create a virtual environment and install all project dependencies, including `pytest` and `toml`.
 
+    After installing dependencies, run the update script to generate the GUI asset source files:
+
+    ```bash
+    ./bin/update
+    ```
+
 ## Configuration
 
 The BaseBender supports loading pre-defined digit sets from tiered TOML configuration files. This allows for a flexible and extensible way to manage common digit sets.

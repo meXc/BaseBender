@@ -22,6 +22,12 @@ poetry install
 
 This will install all project dependencies and set up a virtual environment. You can then activate the environment using `poetry shell`.
 
+After installation, run the update script to generate necessary GUI asset source files:
+
+```bash
+./bin/update
+```
+
 ## Code of Conduct
 
 This project adheres to the [Contributor Covenant Code of Conduct](https://www.contributor-covenant.org/version/2/1/code_of_conduct/). By participating, you are expected to uphold this code. Please report any unacceptable behavior to the project's owner.
