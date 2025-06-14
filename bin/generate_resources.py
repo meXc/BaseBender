@@ -32,9 +32,9 @@ def main():
 
     try:
         # 2. Construct the command to run pyside6-rcc
-        # We don't need 'poetry run' here because Poetry executes this script
-        # within the context of its own virtual environment during 'poetry build'.
-        command = ["pyside6-rcc", qrc_file, "-o", output_file]
+        # We need 'poetry run' here because pyside6-rcc might not be directly in the PATH
+        # when this script is executed in certain environments (e.g., GitHub Actions).
+        command = ["poetry", "run", "pyside6-rcc", qrc_file, "-o", output_file]
 
         print(f"Executing command: {' '.join(command)}")
 
