@@ -20,8 +20,8 @@ def main():
     """
     # Define paths relative to the project root.
     # When 'poetry build' executes this script, it runs from the project root.
-    qrc_file = "src/rebaser/resources/app_resources.qrc"
-    output_dir = "src/rebaser/generated"
+    qrc_file = "src/basebender/rebaser/resources/app_resources.qrc"
+    output_dir = "src/basebender/rebaser/generated"
     output_file = os.path.join(output_dir, "app_resources_rc.py")
 
     print(f"Starting resource generation from: {qrc_file}")

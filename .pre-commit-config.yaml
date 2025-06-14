@@ -15,12 +15,12 @@ repos:
     rev: 25.1.0
     hooks:
       - id: black
-        exclude: src/rebaser/generated/
+        exclude: src/basebender/rebaser/generated/
   - repo: https://github.com/PyCQA/isort
     rev: 6.0.1
     hooks:
       - id: isort
-        exclude: src/rebaser/generated/
+        exclude: src/basebender/rebaser/generated/
   - repo: https://github.com/PyCQA/pylint
     rev: v3.3.7
     hooks:
@@ -28,4 +28,4 @@ repos:
         language: system
         args: ["--rcfile=.pylintrc"]
         types: [python]
-        exclude: src/rebaser/generated/app_resources_rc.py
+        exclude: src/basebender/rebaser/generated/app_resources_rc.py

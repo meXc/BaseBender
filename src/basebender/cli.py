@@ -13,10 +13,15 @@ from typing import Optional
 
 import uvicorn
 
-from src.gui.main_window import run_gui  # Moved from conditional import
-from src.rebaser.digit_set_rebaser import DigitSetRebaser
-from src.rebaser.digit_sets import get_predefined_digit_sets, suggest_digit_sets
-from src.rebaser.models import DigitSet
+from src.basebender.gui.main_window import (  # Moved from conditional import
+    run_gui,
+)
+from src.basebender.rebaser.digit_set_rebaser import DigitSetRebaser
+from src.basebender.rebaser.digit_sets import (
+    get_predefined_digit_sets,
+    suggest_digit_sets,
+)
+from src.basebender.rebaser.models import DigitSet
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")

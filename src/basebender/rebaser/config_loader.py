@@ -43,7 +43,7 @@ def _get_config_paths() -> (
           TOML file, or None if not applicable for the OS.
     """
     package_config_path = (
-        importlib.resources.files("src.rebaser.resources.data")
+        importlib.resources.files("src.basebender.rebaser.resources.data")
         / "default_digit_sets.toml"
     )
 
