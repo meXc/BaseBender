@@ -13,15 +13,15 @@ from typing import Optional
 
 import uvicorn
 
-from src.basebender.gui.main_window import (  # Moved from conditional import
+from basebender.gui.main_window import (  # Moved from conditional import
     run_gui,
 )
-from src.basebender.rebaser.digit_set_rebaser import DigitSetRebaser
-from src.basebender.rebaser.digit_sets import (
+from basebender.rebaser.digit_set_rebaser import DigitSetRebaser
+from basebender.rebaser.digit_sets import (
     get_predefined_digit_sets,
     suggest_digit_sets,
 )
-from src.basebender.rebaser.models import DigitSet
+from basebender.rebaser.models import DigitSet
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
@@ -218,7 +218,9 @@ def main() -> None:
         run_gui()
     elif args.api:
         # Ensure the API module is importable from the current directory
-        uvicorn.run("src.api.main:APP", host="0.0.0.0", port=8000, reload=True)
+        uvicorn.run(
+            "basebender.api.main:APP", host="0.0.0.0", port=8000, reload=True
+        )
     elif args.list_digit_sets:
         exit_code = list_digit_sets_cli()
     elif args.suggest_digit_sets:

@@ -30,11 +30,11 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from src.basebender.rebaser.config_loader import load_ui_state, save_ui_state
-from src.basebender.rebaser.digit_set_rebaser import DigitSetRebaser
-from src.basebender.rebaser.digit_sets import get_predefined_digit_sets
-from src.basebender.rebaser.generated import app_resources_rc
-from src.basebender.rebaser.models import DigitSet
+from basebender.rebaser.config_loader import load_ui_state, save_ui_state
+from basebender.rebaser.digit_set_rebaser import DigitSetRebaser
+from basebender.rebaser.digit_sets import get_predefined_digit_sets
+from basebender.rebaser.generated import app_resources_rc
+from basebender.rebaser.models import DigitSet
 
 ICON_INPUT_QRC_PATH = ":/app/icons/input.svg"
 ICON_OUTPUT_QRC_PATH = ":/app/icons/output.svg"

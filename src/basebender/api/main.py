@@ -12,9 +12,9 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 
-from src.basebender.rebaser.digit_set_rebaser import DigitSetRebaser
-from src.basebender.rebaser.digit_sets import get_predefined_digit_sets
-from src.basebender.rebaser.models import DigitSet
+from basebender.rebaser.digit_set_rebaser import DigitSetRebaser
+from basebender.rebaser.digit_sets import get_predefined_digit_sets
+from basebender.rebaser.models import DigitSet
 
 APP = FastAPI(
     title="BaseBender API",
@@ -269,5 +269,5 @@ def start_api() -> None:
     Starts the FastAPI server using uvicorn.
     """
     uvicorn.run(
-        "src.basebender.api.main:APP", host="0.0.0.0", port=8000, reload=True
+        "basebender.api.main:APP", host="0.0.0.0", port=8000, reload=True
     )
