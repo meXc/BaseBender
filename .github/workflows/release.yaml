@@ -7,8 +7,8 @@ on:
 jobs:
   publish-testpypi:
     if: startsWith(github.event.release.tag_name, 'test-')
-    uses: .github/workflows/publish-testpypi.yaml
+    uses: ./.github/workflows/publish-testpypi.yaml
 
   publish-pypi:
     if: startsWith(github.event.release.tag_name, 'release-')
-    uses: .github/workflows/publish-pypi.yaml
+    uses: ./.github/workflows/publish-pypi.yaml
