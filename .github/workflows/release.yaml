@@ -1,0 +1,14 @@
+name: Publish package
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  publish-testpypi:
+    if: startsWith(github.event.release.tag_name, 'test-')
+    uses: .github/workflows/publish-testpypi.yaml
+
+  publish-pypi:
+    if: startsWith(github.event.release.tag_name, 'release-')
+    uses: .github/workflows/publish-pypi.yaml
