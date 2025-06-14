@@ -2,7 +2,7 @@
 pythonpath = ["src/basebender"]
 [project]
 name = "basebender"
-version = "0.1.4"
+version = "0.1.5"
 description = "A Python module for rebaseing strings between different digit sets (positional number systems)."
 authors = [
     {name = "by.a.mexc@gmail.com"}
