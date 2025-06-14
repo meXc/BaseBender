@@ -1,10 +1,12 @@
 name: Publish to TestPyPI
 
 on:
-  workflow_call:
+  release:
+    types: [created]
 
 jobs:
   publish:
+    if: startsWith(github.event.release.tag_name, 'test-')
     permissions:
       id-token: write # This is required for pypa/gh-action-pypi-publish to authenticate with PyPI
     strategy:
