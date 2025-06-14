@@ -5,6 +5,8 @@ on:
 
 jobs:
   publish:
+    permissions:
+      id-token: write # This is required for pypa/gh-action-pypi-publish to authenticate with PyPI
     strategy:
       matrix:
         os: [ubuntu-latest]
