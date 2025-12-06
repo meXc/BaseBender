@@ -57,21 +57,19 @@ def main():
 
     except FileNotFoundError:
         print(
-            "Error: 'pyside6-rcc' command not found. "
-            "Ensure PySide6 is installed in your Poetry environment.",
-            file=sys.stderr,
+            "'pyside6-rcc' command not found. "
+            "Skipping the re-generation of the icons",
+            file=sys.stdout,
         )
         print("You can install it with: poetry add pyside6", file=sys.stderr)
-        sys.exit(1)  # Exit with an error code
     except subprocess.CalledProcessError as process_error:
         print(
-            f"Error generating resources: Command failed with exit code {process_error.returncode}",
-            file=sys.stderr,
+            f"Error generating resources: Command failed with exit code {process_error.returncode}\n"
+            "Skipping the re-generation of the icons",
+            file=sys.stdout,
         )
         print(f"Command: {' '.join(process_error.cmd)}", file=sys.stderr)
-        print(f"Stdout: {process_error.stdout}", file=sys.stderr)
         print(f"Stderr: {process_error.stderr}", file=sys.stderr)
-        sys.exit(1)  # Exit with an error code
     except Exception as general_error:  # pylint: disable=W0718
         # Catching a broad exception here as a final fallback for unexpected issues.
         print(f"An unexpected error occurred: {general_error}", file=sys.stderr)
