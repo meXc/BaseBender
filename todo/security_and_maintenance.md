@@ -5,7 +5,7 @@
 - Pre-commit secrets: Implement pre-commit hooks to prevent accidental commitment of sensitive information.
 
 ## Planned Bug Fixes
-- (GUI) Window Resizing doesn't work properly 
+- (GUI) Window Resizing doesn't work properly
 
 ## Planned Packaging
 - PyPI: Prepare and publish the package to the Python Package Index for easy installation.

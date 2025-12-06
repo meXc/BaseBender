@@ -5,7 +5,6 @@ specifically for the `DigitSetRebaser` class.
 """
 
 import pytest
-
 from rebaser.digit_set_rebaser import DigitSetRebaser
 from rebaser.models import DigitSet
 

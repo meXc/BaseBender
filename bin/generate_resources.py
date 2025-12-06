@@ -64,7 +64,6 @@ def main():
         print("You can install it with: poetry add pyside6", file=sys.stderr)
     except subprocess.CalledProcessError as process_error:
         print(
-            f"Error generating resources: Command failed with exit code {process_error.returncode}\n"
             "Skipping the re-generation of the icons",
             file=sys.stdout,
         )
