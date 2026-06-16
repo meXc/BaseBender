@@ -1,6 +1,6 @@
 [project]
 name = "basebender"
-version = "0.1.6"
+version = "0.2.0"
 description = "A Python module for rebaseing strings between different digit sets (positional number systems)."
 authors = [
     {name = "by.a.mexc@gmail.com"}
