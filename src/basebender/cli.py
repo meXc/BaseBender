@@ -12,9 +12,6 @@ import sys
 
 import uvicorn
 
-from basebender.gui.main_window import (  # Moved from conditional import
-    run_gui,
-)
 from basebender.rebaser.digit_set_rebaser import DigitSetRebaser
 from basebender.rebaser.digit_sets import (
     get_predefined_digit_sets,
@@ -205,6 +202,8 @@ def main() -> None:
     exit_code = 0
 
     if args.gui:
+        from basebender.gui.main_window import run_gui
+
         run_gui()
     elif args.api:
         # Ensure the API module is importable from the current directory
