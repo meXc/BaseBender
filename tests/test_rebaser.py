@@ -5,15 +5,14 @@ specifically for the `DigitSetRebaser` class.
 """
 
 import pytest
-from rebaser.digit_set_rebaser import DigitSetRebaser
-from rebaser.models import DigitSet
+
+from basebender.rebaser.digit_set_rebaser import DigitSetRebaser
+from basebender.rebaser.models import DigitSet
 
 # Define some common DigitSet instances for testing
 DECIMAL_DIGIT_SET = DigitSet(name="Decimal", digits="0123456789", source="test")
 BINARY_DIGIT_SET = DigitSet(name="Binary", digits="01", source="test")
-HEX_DIGIT_SET = DigitSet(
-    name="Hexadecimal", digits="0123456789ABCDEF", source="test"
-)
+HEX_DIGIT_SET = DigitSet(name="Hexadecimal", digits="0123456789ABCDEF", source="test")
 OCTAL_DIGIT_SET = DigitSet(name="Octal", digits="01234567", source="test")
 BASE62_DIGIT_SET = DigitSet(
     name="Base62",
@@ -31,9 +30,7 @@ def test_rebaser_init_with_both_digit_sets():
     output digit sets are provided. It verifies that the internal lists and maps
     are populated as expected and that the initial digit sets are stored.
     """
-    rebaser = DigitSetRebaser(
-        out_digit_set=HEX_DIGIT_SET, in_digit_set=DECIMAL_DIGIT_SET
-    )
+    rebaser = DigitSetRebaser(out_digit_set=HEX_DIGIT_SET, in_digit_set=DECIMAL_DIGIT_SET)
     assert rebaser.input_digit_set_list == list(DECIMAL_DIGIT_SET.digits)
     assert rebaser.output_digit_set_list == list(HEX_DIGIT_SET.digits)
     assert rebaser.initial_input_digit_set == DECIMAL_DIGIT_SET
@@ -54,7 +51,7 @@ def test_rebaser_init_with_only_input_digit_set():
 
 def test_rebaser_init_with_only_output_digit_set():
     """
-    Tests that the DigitSetRebaser initializes correctly when only the output digit set is provided.
+    Tests DigitSetRebaser initialization with only the output digit set.
     It verifies that the output digit set is set, and the input digit set is not.
     """
     rebaser = DigitSetRebaser(out_digit_set=HEX_DIGIT_SET)
@@ -96,9 +93,7 @@ def test_char_to_position_found():
     Tests the `char_to_position` method when the character is found in the digit set map.
     It verifies that the correct numerical position is returned for valid characters.
     """
-    rebaser = DigitSetRebaser(
-        out_digit_set=HEX_DIGIT_SET, in_digit_set=DECIMAL_DIGIT_SET
-    )
+    rebaser = DigitSetRebaser(out_digit_set=HEX_DIGIT_SET, in_digit_set=DECIMAL_DIGIT_SET)
     assert rebaser.char_to_position("0", rebaser.input_digit_set_map) == 0
     assert rebaser.char_to_position("9", rebaser.input_digit_set_map) == 9
     assert rebaser.char_to_position("F", rebaser.output_digit_set_map) == 15
@@ -110,12 +105,8 @@ def test_char_to_position_not_found_raises_error():
     found in the digit set map. It verifies that an appropriate error message is
     provided.
     """
-    rebaser = DigitSetRebaser(
-        out_digit_set=HEX_DIGIT_SET, in_digit_set=DECIMAL_DIGIT_SET
-    )
-    with pytest.raises(
-        ValueError, match="Character 'd' not found in the digit set."
-    ):
+    rebaser = DigitSetRebaser(out_digit_set=HEX_DIGIT_SET, in_digit_set=DECIMAL_DIGIT_SET)
+    with pytest.raises(ValueError, match="Character 'd' not found in the digit set."):
         rebaser.char_to_position("d", rebaser.input_digit_set_map)
 
 
@@ -125,9 +116,7 @@ def test_position_to_char_valid():
     Tests the `position_to_char` method when the position is valid.
     It verifies that the correct character is returned for valid positions.
     """
-    rebaser = DigitSetRebaser(
-        out_digit_set=HEX_DIGIT_SET, in_digit_set=DECIMAL_DIGIT_SET
-    )
+    rebaser = DigitSetRebaser(out_digit_set=HEX_DIGIT_SET, in_digit_set=DECIMAL_DIGIT_SET)
     assert rebaser.position_to_char(0, rebaser.input_digit_set_list) == "0"
     assert rebaser.position_to_char(9, rebaser.input_digit_set_list) == "9"
     assert rebaser.position_to_char(15, rebaser.output_digit_set_list) == "F"
@@ -139,16 +128,10 @@ def test_position_to_char_out_of_bounds_raises_error():
     of bounds. It verifies that an appropriate error message is provided for both
     positive and negative out-of-bounds positions.
     """
-    rebaser = DigitSetRebaser(
-        out_digit_set=HEX_DIGIT_SET, in_digit_set=DECIMAL_DIGIT_SET
-    )
-    with pytest.raises(
-        IndexError, match="Position 10 is out of bounds for the digit set."
-    ):
+    rebaser = DigitSetRebaser(out_digit_set=HEX_DIGIT_SET, in_digit_set=DECIMAL_DIGIT_SET)
+    with pytest.raises(IndexError, match="Position 10 is out of bounds for the digit set."):
         rebaser.position_to_char(10, rebaser.input_digit_set_list)
-    with pytest.raises(
-        IndexError, match="Position -1 is out of bounds for the digit set."
-    ):
+    with pytest.raises(IndexError, match="Position -1 is out of bounds for the digit set."):
         rebaser.position_to_char(-1, rebaser.input_digit_set_list)
 
 
@@ -158,13 +141,8 @@ def test_string_to_int_from_base_simple():
     Tests `string_to_int_from_base` with a simple decimal string.
     It verifies that a decimal string is correctly converted to its integer equivalent.
     """
-    rebaser = DigitSetRebaser(
-        out_digit_set=BINARY_DIGIT_SET, in_digit_set=DECIMAL_DIGIT_SET
-    )
-    assert (
-        rebaser.string_to_int_from_base("123", rebaser.input_digit_set_map, 10)
-        == 123
-    )
+    rebaser = DigitSetRebaser(out_digit_set=BINARY_DIGIT_SET, in_digit_set=DECIMAL_DIGIT_SET)
+    assert rebaser.string_to_int_from_base("123", rebaser.input_digit_set_map, 10) == 123
 
 
 def test_string_to_int_from_base_binary():
@@ -172,13 +150,8 @@ def test_string_to_int_from_base_binary():
     Tests `string_to_int_from_base` with a binary string.
     It verifies that a binary string is correctly converted to its integer equivalent.
     """
-    rebaser = DigitSetRebaser(
-        out_digit_set=DECIMAL_DIGIT_SET, in_digit_set=BINARY_DIGIT_SET
-    )
-    assert (
-        rebaser.string_to_int_from_base("101", rebaser.input_digit_set_map, 2)
-        == 5
-    )
+    rebaser = DigitSetRebaser(out_digit_set=DECIMAL_DIGIT_SET, in_digit_set=BINARY_DIGIT_SET)
+    assert rebaser.string_to_int_from_base("101", rebaser.input_digit_set_map, 2) == 5
 
 
 def test_string_to_int_from_base_hex():
@@ -186,17 +159,9 @@ def test_string_to_int_from_base_hex():
     Tests `string_to_int_from_base` with hexadecimal strings.
     It verifies that hexadecimal strings are correctly converted to their integer equivalents.
     """
-    rebaser = DigitSetRebaser(
-        out_digit_set=BINARY_DIGIT_SET, in_digit_set=HEX_DIGIT_SET
-    )
-    assert (
-        rebaser.string_to_int_from_base("F", rebaser.input_digit_set_map, 16)
-        == 15
-    )
-    assert (
-        rebaser.string_to_int_from_base("1A", rebaser.input_digit_set_map, 16)
-        == 26
-    )
+    rebaser = DigitSetRebaser(out_digit_set=BINARY_DIGIT_SET, in_digit_set=HEX_DIGIT_SET)
+    assert rebaser.string_to_int_from_base("F", rebaser.input_digit_set_map, 16) == 15
+    assert rebaser.string_to_int_from_base("1A", rebaser.input_digit_set_map, 16) == 26
 
 
 def test_string_to_int_from_base_empty_string():
@@ -204,13 +169,8 @@ def test_string_to_int_from_base_empty_string():
     Tests `string_to_int_from_base` with an empty input string.
     It verifies that an empty string correctly converts to an integer value of 0.
     """
-    rebaser = DigitSetRebaser(
-        out_digit_set=BINARY_DIGIT_SET, in_digit_set=DECIMAL_DIGIT_SET
-    )
-    assert (
-        rebaser.string_to_int_from_base("", rebaser.input_digit_set_map, 10)
-        == 0
-    )
+    rebaser = DigitSetRebaser(out_digit_set=BINARY_DIGIT_SET, in_digit_set=DECIMAL_DIGIT_SET)
+    assert rebaser.string_to_int_from_base("", rebaser.input_digit_set_map, 10) == 0
 
 
 # Test cases for int_to_string_in_base
@@ -219,13 +179,8 @@ def test_int_to_string_in_base_simple():
     Tests `int_to_string_in_base` with a simple integer and decimal base.
     It verifies that an integer is correctly converted to its decimal string representation.
     """
-    rebaser = DigitSetRebaser(
-        in_digit_set=BINARY_DIGIT_SET, out_digit_set=DECIMAL_DIGIT_SET
-    )
-    assert (
-        rebaser.int_to_string_in_base(123, rebaser.output_digit_set_list, 10)
-        == "123"
-    )
+    rebaser = DigitSetRebaser(in_digit_set=BINARY_DIGIT_SET, out_digit_set=DECIMAL_DIGIT_SET)
+    assert rebaser.int_to_string_in_base(123, rebaser.output_digit_set_list, 10) == "123"
 
 
 def test_int_to_string_in_base_binary():
@@ -233,13 +188,8 @@ def test_int_to_string_in_base_binary():
     Tests `int_to_string_in_base` with an integer and binary base.
     It verifies that an integer is correctly converted to its binary string representation.
     """
-    rebaser = DigitSetRebaser(
-        in_digit_set=DECIMAL_DIGIT_SET, out_digit_set=BINARY_DIGIT_SET
-    )
-    assert (
-        rebaser.int_to_string_in_base(5, rebaser.output_digit_set_list, 2)
-        == "101"
-    )
+    rebaser = DigitSetRebaser(in_digit_set=DECIMAL_DIGIT_SET, out_digit_set=BINARY_DIGIT_SET)
+    assert rebaser.int_to_string_in_base(5, rebaser.output_digit_set_list, 2) == "101"
 
 
 def test_int_to_string_in_base_hex():
@@ -247,17 +197,9 @@ def test_int_to_string_in_base_hex():
     Tests `int_to_string_in_base` with integers and hexadecimal base.
     It verifies that integers are correctly converted to their hexadecimal string representations.
     """
-    rebaser = DigitSetRebaser(
-        in_digit_set=BINARY_DIGIT_SET, out_digit_set=HEX_DIGIT_SET
-    )
-    assert (
-        rebaser.int_to_string_in_base(15, rebaser.output_digit_set_list, 16)
-        == "F"
-    )
-    assert (
-        rebaser.int_to_string_in_base(26, rebaser.output_digit_set_list, 16)
-        == "1A"
-    )
+    rebaser = DigitSetRebaser(in_digit_set=BINARY_DIGIT_SET, out_digit_set=HEX_DIGIT_SET)
+    assert rebaser.int_to_string_in_base(15, rebaser.output_digit_set_list, 16) == "F"
+    assert rebaser.int_to_string_in_base(26, rebaser.output_digit_set_list, 16) == "1A"
 
 
 def test_int_to_string_in_base_zero():
@@ -266,13 +208,8 @@ def test_int_to_string_in_base_zero():
     zero is correctly converted to its string representation using the first
     digit of the output set.
     """
-    rebaser = DigitSetRebaser(
-        in_digit_set=BINARY_DIGIT_SET, out_digit_set=DECIMAL_DIGIT_SET
-    )
-    assert (
-        rebaser.int_to_string_in_base(0, rebaser.output_digit_set_list, 10)
-        == "0"
-    )
+    rebaser = DigitSetRebaser(in_digit_set=BINARY_DIGIT_SET, out_digit_set=DECIMAL_DIGIT_SET)
+    assert rebaser.int_to_string_in_base(0, rebaser.output_digit_set_list, 10) == "0"
 
 
 def test_int_to_string_in_base_length_1_output_digit_set():
@@ -281,16 +218,9 @@ def test_int_to_string_in_base_length_1_output_digit_set():
     character. It verifies that the method returns an empty string when the base
     is 1, as there's no meaningful conversion.
     """
-    rebaser = DigitSetRebaser(
-        in_digit_set=DECIMAL_DIGIT_SET, out_digit_set=SINGLE_CHAR_DIGIT_SET
-    )
-    assert (
-        rebaser.int_to_string_in_base(10, rebaser.output_digit_set_list, 1)
-        == ""
-    )
-    assert (
-        rebaser.int_to_string_in_base(0, rebaser.output_digit_set_list, 1) == ""
-    )
+    rebaser = DigitSetRebaser(in_digit_set=DECIMAL_DIGIT_SET, out_digit_set=SINGLE_CHAR_DIGIT_SET)
+    assert rebaser.int_to_string_in_base(10, rebaser.output_digit_set_list, 1) == ""
+    assert rebaser.int_to_string_in_base(0, rebaser.output_digit_set_list, 1) == ""
 
 
 def test_int_to_string_in_base_invalid_base_raises_error():
@@ -298,9 +228,7 @@ def test_int_to_string_in_base_invalid_base_raises_error():
     Tests that `int_to_string_in_base` raises a ValueError when the base is invalid (e.g., 0).
     It verifies that an appropriate error message is provided.
     """
-    rebaser = DigitSetRebaser(
-        in_digit_set=BINARY_DIGIT_SET, out_digit_set=DECIMAL_DIGIT_SET
-    )
+    rebaser = DigitSetRebaser(in_digit_set=BINARY_DIGIT_SET, out_digit_set=DECIMAL_DIGIT_SET)
     with pytest.raises(
         ValueError,
         match="Base must be greater than 0 for integer to string rebase.",
@@ -314,9 +242,7 @@ def test_rebase_binary_to_decimal() -> None:
     Tests the end-to-end rebase functionality from binary to decimal.
     It verifies that binary strings are correctly converted to their decimal equivalents.
     """
-    rebaser = DigitSetRebaser(
-        out_digit_set=DECIMAL_DIGIT_SET, in_digit_set=BINARY_DIGIT_SET
-    )
+    rebaser = DigitSetRebaser(out_digit_set=DECIMAL_DIGIT_SET, in_digit_set=BINARY_DIGIT_SET)
     assert rebaser.rebase("101") == "5"
     assert rebaser.rebase("1111") == "15"
     assert rebaser.rebase("0") == "0"
@@ -327,9 +253,7 @@ def test_rebase_decimal_to_hexadecimal() -> None:
     Tests the end-to-end rebase functionality from decimal to hexadecimal.
     It verifies that decimal strings are correctly converted to their hexadecimal equivalents.
     """
-    rebaser = DigitSetRebaser(
-        out_digit_set=HEX_DIGIT_SET, in_digit_set=DECIMAL_DIGIT_SET
-    )
+    rebaser = DigitSetRebaser(out_digit_set=HEX_DIGIT_SET, in_digit_set=DECIMAL_DIGIT_SET)
     assert rebaser.rebase("255") == "FF"
     assert rebaser.rebase("10") == "A"
     assert rebaser.rebase("0") == "0"
@@ -340,9 +264,7 @@ def test_rebase_hexadecimal_to_binary() -> None:
     Tests the end-to-end rebase functionality from hexadecimal to binary.
     It verifies that hexadecimal strings are correctly converted to their binary equivalents.
     """
-    rebaser = DigitSetRebaser(
-        out_digit_set=BINARY_DIGIT_SET, in_digit_set=HEX_DIGIT_SET
-    )
+    rebaser = DigitSetRebaser(out_digit_set=BINARY_DIGIT_SET, in_digit_set=HEX_DIGIT_SET)
     assert rebaser.rebase("F") == "1111"
     assert rebaser.rebase("A") == "1010"
     assert rebaser.rebase("10") == "10000"
@@ -354,9 +276,7 @@ def test_rebase_octal_to_decimal() -> None:
     Tests the end-to-end rebase functionality from octal to decimal.
     It verifies that octal strings are correctly converted to their decimal equivalents.
     """
-    rebaser = DigitSetRebaser(
-        out_digit_set=DECIMAL_DIGIT_SET, in_digit_set=OCTAL_DIGIT_SET
-    )
+    rebaser = DigitSetRebaser(out_digit_set=DECIMAL_DIGIT_SET, in_digit_set=OCTAL_DIGIT_SET)
     assert rebaser.rebase("10") == "8"
     assert rebaser.rebase("77") == "63"
     assert rebaser.rebase("0") == "0"
@@ -367,9 +287,7 @@ def test_rebase_custom_base_62_to_decimal() -> None:
     Tests the end-to-end rebase functionality from a custom Base62 digit set to decimal.
     It verifies that Base62 strings are correctly converted to their decimal equivalents.
     """
-    rebaser = DigitSetRebaser(
-        out_digit_set=DECIMAL_DIGIT_SET, in_digit_set=BASE62_DIGIT_SET
-    )
+    rebaser = DigitSetRebaser(out_digit_set=DECIMAL_DIGIT_SET, in_digit_set=BASE62_DIGIT_SET)
     assert rebaser.rebase("Z") == "61"
     assert rebaser.rebase("10") == "62"
     assert rebaser.rebase("g") == "16"
@@ -382,9 +300,7 @@ def test_rebase_decimal_to_custom_base_62() -> None:
     Tests the end-to-end rebase functionality from decimal to a custom Base62 digit set.
     It verifies that decimal strings are correctly converted to their Base62 equivalents.
     """
-    rebaser = DigitSetRebaser(
-        out_digit_set=BASE62_DIGIT_SET, in_digit_set=DECIMAL_DIGIT_SET
-    )
+    rebaser = DigitSetRebaser(out_digit_set=BASE62_DIGIT_SET, in_digit_set=DECIMAL_DIGIT_SET)
     assert rebaser.rebase("61") == "Z"
     assert rebaser.rebase("62") == "10"
     assert rebaser.rebase("42") == "G"
@@ -454,9 +370,7 @@ def test_rebase_with_single_char_output_digit_set() -> None:
     character. It verifies that the rebased string is empty, as a
     single-character output set cannot represent numbers greater than 0.
     """
-    rebaser = DigitSetRebaser(
-        out_digit_set=SINGLE_CHAR_DIGIT_SET, in_digit_set=DECIMAL_DIGIT_SET
-    )
+    rebaser = DigitSetRebaser(out_digit_set=SINGLE_CHAR_DIGIT_SET, in_digit_set=DECIMAL_DIGIT_SET)
     assert rebaser.rebase("123") == ""
     assert rebaser.rebase("0") == ""
 
@@ -467,9 +381,7 @@ def test_rebase_with_explicitly_empty_input_digit_set() -> None:
     verifies that the rebased string is the first character of the output digit
     set (representing 0), as no valid input characters can be processed.
     """
-    rebaser = DigitSetRebaser(
-        out_digit_set=DECIMAL_DIGIT_SET, in_digit_set=EMPTY_DIGIT_SET
-    )
+    rebaser = DigitSetRebaser(out_digit_set=DECIMAL_DIGIT_SET, in_digit_set=EMPTY_DIGIT_SET)
     assert rebaser.rebase("123") == "0"
     assert rebaser.rebase("abc") == "0"
     assert rebaser.rebase("") == "0"
@@ -481,9 +393,7 @@ def test_rebase_with_explicitly_empty_output_digit_set() -> None:
     verifies that the rebased string is always empty, as there are no characters
     to represent the output.
     """
-    rebaser = DigitSetRebaser(
-        out_digit_set=EMPTY_DIGIT_SET, in_digit_set=DECIMAL_DIGIT_SET
-    )
+    rebaser = DigitSetRebaser(out_digit_set=EMPTY_DIGIT_SET, in_digit_set=DECIMAL_DIGIT_SET)
     assert rebaser.rebase("123") == ""
     assert rebaser.rebase("0") == ""
     assert rebaser.rebase("") == ""

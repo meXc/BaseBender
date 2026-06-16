@@ -7,7 +7,7 @@ This document provides detailed examples for using the BaseBender FastAPI.
 To start the FastAPI server, use the `--api` flag with the CLI:
 
 ```bash
-poetry run python cli.py --api
+poetry run basebender-api
 ```
 
 The API will be available at `http://127.0.0.1:8000`. You can access the interactive API documentation (Swagger UI) at `http://127.0.0.1:8000/docs`.
@@ -116,7 +116,7 @@ curl -X POST "http://127.0.0.1:8000/rebase" -H "Content-Type: application/json" 
 curl -X POST "http://127.0.0.1:8000/rebase" -H "Content-Type: application/json" -d '{
   "input_text": "123",
   "source_digit_set_id": "package:Decimal",
-  "target_digit_set_id": "package:Binary" # Assuming Binary is defined as "0" or "1" for this example
+  "target_digit_set": "0"
 }'
 ```
 

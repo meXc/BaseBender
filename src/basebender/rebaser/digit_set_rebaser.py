@@ -7,8 +7,6 @@ strings from an input digit set to an output digit set, supporting dynamic
 derivation of the input digit set and various rebase operations.
 """
 
-from typing import Dict, List, Optional
-
 from .models import DigitSet
 
 
@@ -23,38 +21,34 @@ class DigitSetRebaser:
 
     def __init__(
         self,
-        out_digit_set: Optional[DigitSet] = None,
-        in_digit_set: Optional[DigitSet] = None,
+        out_digit_set: DigitSet | None = None,
+        in_digit_set: DigitSet | None = None,
     ) -> None:
-        self._initial_input_digit_set: Optional[DigitSet] = in_digit_set
-        self._initial_output_digit_set: Optional[DigitSet] = out_digit_set
-        self._in_digit_set_map: Dict[str, int] = {}
-        self._in_digit_set_list: List[str] = []
-        self._out_digit_set_map: Dict[str, int] = {}
-        self._out_digit_set_list: List[str] = []
+        self._initial_input_digit_set: DigitSet | None = in_digit_set
+        self._initial_output_digit_set: DigitSet | None = out_digit_set
+        self._in_digit_set_map: dict[str, int] = {}
+        self._in_digit_set_list: list[str] = []
+        self._out_digit_set_map: dict[str, int] = {}
+        self._out_digit_set_list: list[str] = []
 
         # Output digit set is always explicitly set or None;
         # not dynamically determined in __init__
         if out_digit_set:
-            self._out_digit_set_map = {
-                char: i
-                for i, char in enumerate(dict.fromkeys(out_digit_set.digits))
-            }
-            self._out_digit_set_list = list(self._out_digit_set_map.keys())
+            out_digits = DigitSet.deduplicate_digits(out_digit_set.digits)
+            self._out_digit_set_map = {char: i for i, char in enumerate(out_digits)}
+            self._out_digit_set_list = list(out_digits)
 
         # Input digit set is dynamically determined in rebase
         # if _initial_input_digit_set is None
         if in_digit_set:
-            self._in_digit_set_map = {
-                char: i
-                for i, char in enumerate(dict.fromkeys(in_digit_set.digits))
-            }
-            self._in_digit_set_list = list(self._in_digit_set_map.keys())
+            in_digits = DigitSet.deduplicate_digits(in_digit_set.digits)
+            self._in_digit_set_map = {char: i for i, char in enumerate(in_digits)}
+            self._in_digit_set_list = list(in_digits)
 
     @property
     def initial_input_digit_set(
         self,
-    ) -> Optional[DigitSet]:
+    ) -> DigitSet | None:
         """
         The initial input digit set provided during initialization.
 
@@ -68,7 +62,7 @@ class DigitSetRebaser:
     @property
     def initial_output_digit_set(
         self,
-    ) -> Optional[DigitSet]:
+    ) -> DigitSet | None:
         """
         The initial output digit set provided during initialization.
 
@@ -82,7 +76,7 @@ class DigitSetRebaser:
     @property
     def input_digit_set_map(
         self,
-    ) -> Dict[str, int]:
+    ) -> dict[str, int]:
         """
         A dictionary mapping characters to their integer positions for the input digit set.
 
@@ -96,7 +90,7 @@ class DigitSetRebaser:
     @property
     def input_digit_set_list(
         self,
-    ) -> List[str]:
+    ) -> list[str]:
         """
         An ordered list of characters representing the input digit set.
 
@@ -110,7 +104,7 @@ class DigitSetRebaser:
     @property
     def output_digit_set_map(
         self,
-    ) -> Dict[str, int]:
+    ) -> dict[str, int]:
         """
         A dictionary mapping characters to their integer positions for the output digit set.
 
@@ -124,7 +118,7 @@ class DigitSetRebaser:
     @property
     def output_digit_set_list(
         self,
-    ) -> List[str]:
+    ) -> list[str]:
         """
         An ordered list of characters representing the output digit set.
 
@@ -135,7 +129,8 @@ class DigitSetRebaser:
         """
         return self._out_digit_set_list
 
-    def char_to_position(self, char: str, digit_set_map: Dict[str, int]) -> int:
+    @staticmethod
+    def char_to_position(char: str, digit_set_map: dict[str, int]) -> int:
         """
         Converts a character to its numerical position within a given digit set map.
 
@@ -153,7 +148,8 @@ class DigitSetRebaser:
             raise ValueError(f"Character '{char}' not found in the digit set.")
         return digit_set_map[char]
 
-    def position_to_char(self, position: int, digit_set_list: List[str]) -> str:
+    @staticmethod
+    def position_to_char(position: int, digit_set_list: list[str]) -> str:
         """
         Converts a numerical position to its corresponding character in a digit set list.
 
@@ -168,14 +164,11 @@ class DigitSetRebaser:
             IndexError: If the position is out of bounds for the digit set.
         """
         if not 0 <= position < len(digit_set_list):
-            raise IndexError(
-                f"Position {position} is out of bounds for the digit set."
-            )
+            raise IndexError(f"Position {position} is out of bounds for the digit set.")
         return digit_set_list[position]
 
-    def string_to_int_from_base(
-        self, input_str: str, digit_set_map: Dict[str, int], base: int
-    ) -> int:
+    @staticmethod
+    def string_to_int_from_base(input_str: str, digit_set_map: dict[str, int], base: int) -> int:
         """
         Converts a string representation of a number from a given base to an integer.
 
@@ -190,9 +183,7 @@ class DigitSetRebaser:
         Returns:
             The integer representation of the input string.
         """
-        filtered_input_str = [
-            char for char in input_str if char in digit_set_map
-        ]
+        filtered_input_str = [char for char in input_str if char in digit_set_map]
 
         if not filtered_input_str:
             return 0
@@ -205,9 +196,8 @@ class DigitSetRebaser:
             power += 1
         return integer_value
 
-    def int_to_string_in_base(
-        self, integer_value: int, digit_set_list: List[str], base: int
-    ) -> str:
+    @staticmethod
+    def int_to_string_in_base(integer_value: int, digit_set_list: list[str], base: int) -> str:
         """
         Converts an integer to its string representation in a given base.
 
@@ -223,9 +213,7 @@ class DigitSetRebaser:
             ValueError: If the base is not greater than 0.
         """
         if base <= 0:
-            raise ValueError(
-                "Base must be greater than 0 for integer to string rebase."
-            )
+            raise ValueError("Base must be greater than 0 for integer to string rebase.")
 
         if base == 1:
             return ""
@@ -233,7 +221,7 @@ class DigitSetRebaser:
         if integer_value == 0:
             return digit_set_list[0]
 
-        result_chars: List[str] = []
+        result_chars: list[str] = []
         while integer_value > 0:
             remainder = integer_value % base
             result_chars.append(digit_set_list[remainder])
@@ -264,56 +252,38 @@ class DigitSetRebaser:
             The rebased string.
         """
         if not input_string:
-            return (
-                self._out_digit_set_list[0] if self._out_digit_set_list else ""
-            )
+            return self._out_digit_set_list[0] if self._out_digit_set_list else ""
 
-        effective_input_digit_set_map: Dict[str, int]
-        effective_input_digit_set_list: List[str]
+        effective_input_digit_set_map: dict[str, int]
+        effective_input_digit_set_list: list[str]
 
         if self._initial_input_digit_set:
             effective_input_digit_set_map = self._in_digit_set_map
             effective_input_digit_set_list = self._in_digit_set_list
         else:
             # Dynamically derive input digit set from input_string
-            effective_input_digit_set_map = {
-                char: i for i, char in enumerate(dict.fromkeys(input_string))
-            }
-            effective_input_digit_set_list = list(
-                effective_input_digit_set_map.keys()
-            )
+            derived_digits = DigitSet.deduplicate_digits(input_string)
+            effective_input_digit_set_map = {char: i for i, char in enumerate(derived_digits)}
+            effective_input_digit_set_list = list(derived_digits)
 
         # Scenario 1: No explicit output digit set, and no initial input digit set
         # (meaning input digit set was dynamically derived).
         # In this case, just return the input string as is.
-        if (
-            self._initial_output_digit_set is None
-            and self._initial_input_digit_set is None
-        ):
+        if self._initial_output_digit_set is None and self._initial_input_digit_set is None:
             return input_string
 
         # Scenario 2: No explicit output digit set, but an initial input digit set
         # was provided. Filter the input string based on the provided input digit set.
-        if (
-            self._initial_output_digit_set is None
-            and self._initial_input_digit_set is not None
-        ):
+        if self._initial_output_digit_set is None and self._initial_input_digit_set is not None:
             filtered_string = "".join(
-                char
-                for char in input_string
-                if char in effective_input_digit_set_map
+                char for char in input_string if char in effective_input_digit_set_map
             )
             return filtered_string
 
         # If the effective input digit set is empty or has only one character,
         # and we are supposed to rebase, return the first char of output or empty.
-        if (
-            not effective_input_digit_set_list
-            or len(effective_input_digit_set_list) <= 1
-        ):
-            return (
-                self._out_digit_set_list[0] if self._out_digit_set_list else ""
-            )
+        if not effective_input_digit_set_list or len(effective_input_digit_set_list) <= 1:
+            return self._out_digit_set_list[0] if self._out_digit_set_list else ""
 
         # If the output digit set is empty, return an empty string
         if not self._out_digit_set_list:

@@ -11,19 +11,16 @@ import importlib.resources
 import logging
 import os
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, cast
 
 import toml
 
 from .models import DigitSet
 
-# Configure logging for this module
-logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+logger = logging.getLogger(__name__)
 
 
-def _get_config_paths() -> (
-    Tuple[Path, Optional[Path], Optional[Path], Optional[Path]]
-):
+def _get_config_paths() -> tuple[Path, Path | None, Path | None, Path | None]:
     """
     Determines the paths for package, system, and user configuration files.
 
@@ -42,9 +39,12 @@ def _get_config_paths() -> (
         - ui_state_path (Optional[Path]): Path to the user-specific UI state
           TOML file, or None if not applicable for the OS.
     """
-    package_config_path = (
-        importlib.resources.files("basebender.rebaser.resources.data")
-        / "default_digit_sets.toml"
+    package_config_path = Path(
+        cast(
+            str,
+            importlib.resources.files("basebender.rebaser.resources.data")
+            / "default_digit_sets.toml",
+        )
     )
 
     # System config path (platform-dependent)
@@ -64,16 +64,10 @@ def _get_config_paths() -> (
     if os.name == "posix":
         user_config_dir = Path.home() / ".config" / "basebender"
     elif os.name == "nt":
-        user_config_dir = (
-            Path(os.environ.get("APPDATA", Path.home())) / "basebender"
-        )
+        user_config_dir = Path(os.environ.get("APPDATA", Path.home())) / "basebender"
 
-    user_config_path = (
-        user_config_dir / "digit_sets.toml" if user_config_dir else None
-    )
-    ui_state_path = (
-        user_config_dir / "ui_state.toml" if user_config_dir else None
-    )
+    user_config_path = user_config_dir / "digit_sets.toml" if user_config_dir else None
+    ui_state_path = user_config_dir / "ui_state.toml" if user_config_dir else None
 
     return (
         package_config_path,
@@ -83,9 +77,7 @@ def _get_config_paths() -> (
     )
 
 
-def load_digit_sets_from_toml(
-    filepath: Path, source_type: str
-) -> List[DigitSet]:
+def load_digit_sets_from_toml(filepath: Path, source_type: str) -> list[DigitSet]:
     """
     Loads digit sets from a TOML file, associating them with a given source type.
 
@@ -98,21 +90,19 @@ def load_digit_sets_from_toml(
         A list of `DigitSet` objects loaded from the file. Returns an empty list
         if the file is not found, is malformed, or contains invalid entries.
     """
-    loaded_digit_sets: List[DigitSet] = []
+    loaded_digit_sets: list[DigitSet] = []
     try:
-        with open(filepath, "r", encoding="utf-8") as file_ptr:
+        with open(filepath, encoding="utf-8") as file_ptr:
             config = toml.load(file_ptr)
 
         digit_sets_data = config.get("digit_sets", [])
         if not isinstance(digit_sets_data, list):
-            logging.warning(
-                "'%s' in %s is not a list. Skipping.", "digit_sets", filepath
-            )
+            logger.warning("'%s' in %s is not a list. Skipping.", "digit_sets", filepath)
             return loaded_digit_sets
 
         for digit_set_entry in digit_sets_data:
             if not isinstance(digit_set_entry, dict):
-                logging.warning(
+                logger.warning(
                     "Found non-dictionary item in 'digit_sets' in %s. Skipping: %s",
                     filepath,
                     digit_set_entry,
@@ -123,14 +113,14 @@ def load_digit_sets_from_toml(
             digits = digit_set_entry.get("digits")
 
             if not isinstance(digit_set_name, str) or not digit_set_name:
-                logging.warning(
+                logger.warning(
                     "No 'name' found for a digit set entry in %s. Skipping: %s",
                     filepath,
                     digit_set_entry,
                 )
                 continue
             if not isinstance(digits, str) or not digits:
-                logging.warning(
+                logger.warning(
                     "Digit set entry '%s' in %s missing or invalid 'digits'. Skipping.",
                     digit_set_name,
                     filepath,
@@ -143,15 +133,13 @@ def load_digit_sets_from_toml(
     except FileNotFoundError:
         pass  # No digit sets from this file, which is fine
     except toml.TomlDecodeError as exc:
-        logging.warning("Error decoding TOML file %s: %s", filepath, exc)
+        logger.warning("Error decoding TOML file %s: %s", filepath, exc)
     except OSError as exc:  # Use OSError for modern Python
-        logging.warning(
-            "An unexpected error occurred while loading %s: %s", filepath, exc
-        )
+        logger.warning("An unexpected error occurred while loading %s: %s", filepath, exc)
     return loaded_digit_sets
 
 
-def get_all_digit_sets() -> Dict[str, DigitSet]:
+def get_all_digit_sets() -> dict[str, DigitSet]:
     """
     Loads and merges digit sets from package, system, and user configurations.
 
@@ -165,35 +153,31 @@ def get_all_digit_sets() -> Dict[str, DigitSet]:
     """
     package_path, system_path, user_path, _ = _get_config_paths()
 
-    all_digit_sets_list: List[DigitSet] = []
+    all_digit_sets_list: list[DigitSet] = []
 
     # Load package digit sets
-    all_digit_sets_list.extend(
-        load_digit_sets_from_toml(package_path, "package")
-    )
+    all_digit_sets_list.extend(load_digit_sets_from_toml(package_path, "package"))
 
     # Load system digit sets
     if system_path and system_path.exists():
-        all_digit_sets_list.extend(
-            load_digit_sets_from_toml(system_path, "system")
-        )
+        all_digit_sets_list.extend(load_digit_sets_from_toml(system_path, "system"))
 
     # Load user digit sets (highest precedence)
     if user_path and user_path.exists():
         all_digit_sets_list.extend(load_digit_sets_from_toml(user_path, "user"))
 
-    # Convert list to a dictionary with unique IDs, handling precedence
-    final_digit_sets: Dict[str, DigitSet] = {}
-    for current_digit_set_obj in all_digit_sets_list:
-        unique_id = (
-            f"{current_digit_set_obj.source}:{current_digit_set_obj.name}"
-        )
+    # Convert list to a dictionary with unique IDs, handling precedence.
+    # Process in reverse (user -> system -> package) so highest-precedence entries
+    # are written first and lower-precedence entries overwrite them last.
+    final_digit_sets: dict[str, DigitSet] = {}
+    for current_digit_set_obj in reversed(all_digit_sets_list):
+        unique_id = f"{current_digit_set_obj.source}:{current_digit_set_obj.name}"
         final_digit_sets[unique_id] = current_digit_set_obj
 
     return final_digit_sets
 
 
-def get_ui_state_path() -> Optional[Path]:
+def get_ui_state_path() -> Path | None:
     """
     Returns the path to the user's UI state configuration file.
 
@@ -207,7 +191,7 @@ def get_ui_state_path() -> Optional[Path]:
     return ui_state_path
 
 
-def load_ui_state() -> Dict[str, Any]:
+def load_ui_state() -> dict[str, Any]:
     """
     Loads the UI state from the user's configuration file.
 
@@ -218,14 +202,12 @@ def load_ui_state() -> Dict[str, Any]:
     ui_state_path = get_ui_state_path()
     if ui_state_path and ui_state_path.exists():
         try:
-            with open(ui_state_path, "r", encoding="utf-8") as file_ptr:
-                return toml.load(file_ptr)
+            with open(ui_state_path, encoding="utf-8") as file_ptr:
+                return cast(dict[str, Any], toml.load(file_ptr))
         except toml.TomlDecodeError as exc:
-            logging.warning(
-                "Error decoding UI state TOML file %s: %s", ui_state_path, exc
-            )
+            logger.warning("Error decoding UI state TOML file %s: %s", ui_state_path, exc)
         except OSError as exc:  # Use OSError for modern Python
-            logging.warning(
+            logger.warning(
                 "An unexpected error occurred while loading UI state from %s: %s",
                 ui_state_path,
                 exc,
@@ -233,7 +215,7 @@ def load_ui_state() -> Dict[str, Any]:
     return {}  # Return empty dict if file not found or error
 
 
-def save_ui_state(state_data: Dict[str, Any]) -> None:
+def save_ui_state(state_data: dict[str, Any]) -> None:
     """
     Saves the provided UI state data to the user's configuration file.
 
@@ -250,9 +232,7 @@ def save_ui_state(state_data: Dict[str, Any]) -> None:
             with open(ui_state_path, "w", encoding="utf-8") as file_ptr:
                 toml.dump(state_data, file_ptr)
         except OSError as exc:  # Use OSError for modern Python
-            logging.error(
-                "Could not save UI state to %s: %s", ui_state_path, exc
-            )
+            logger.error("Could not save UI state to %s: %s", ui_state_path, exc)
 
 
 if __name__ == "__main__":
@@ -278,9 +258,7 @@ if __name__ == "__main__":
 
     loaded_state = load_ui_state()
     print(f"Loaded UI state: {loaded_state}")
-    assert (
-        loaded_state == test_state
-    ), "Loaded state does not match saved state!"
+    assert loaded_state == test_state, "Loaded state does not match saved state!"
 
     # Clean up test state file
     ui_path = get_ui_state_path()  # pylint: disable=invalid-name

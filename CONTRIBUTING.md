@@ -14,13 +14,13 @@ We follow the standard GitHub flow for contributions:
 6.  **Open a Pull Request (PR):** Open a pull request from your topic branch to the `main` branch of the upstream repository.
 
 **Environment Setup:**
-Please use [Poetry](https://python-poetry.org/) for dependency management and virtual environment setup. After cloning the repository, navigate to the project root and run:
+Please use [uv](https://docs.astral.sh/uv/) for dependency management and virtual environment setup. After cloning the repository, navigate to the project root and run:
 
 ```bash
-poetry install
+uv sync
 ```
 
-This will install all project dependencies and set up a virtual environment. You can then activate the environment using `poetry shell`.
+This will install all project dependencies and set up a virtual environment.
 
 After installation, run the update script to generate necessary GUI asset source files:
 
@@ -74,9 +74,9 @@ To set up your local development environment, run the setup script:
 
 ## Testing
 
-*   **Running Tests:** Contributors should run tests using `pytest`. From the project root, with your Poetry environment activated, run:
+*   **Running Tests:** Contributors should run tests using `pytest`. From the project root, run:
     ```bash
-    pytest
+    uv run pytest
     ```
 *   **New Tests:** New features and bug fixes should include new tests to cover the added or modified functionality.
 *   **Test Coverage:** While new tests are encouraged, there are no strict test coverage requirements.
@@ -91,17 +91,14 @@ To set up your local development environment, run the setup script:
 
 ## Style Guides
 
-*   **Coding Style:** Adhere to the [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html). We use automated tools to enforce this:
-    *   **Black:** An opinionated code formatter that ensures consistent code style.
-    *   **isort:** A tool to sort Python imports alphabetically and by type.
-    *   **Pylint:** A static code analyzer that checks for errors, enforces a coding standard, and looks for bad smells.
-*   **Automated Checks (pre-commit):** We use `pre-commit` hooks to automatically run `black`, `isort`, and `pylint` before each commit. To set up these hooks, run the following commands after `poetry install`:
+*   **Coding Style:** We use [Ruff](https://docs.astral.sh/ruff/) for both linting and formatting, which enforces a consistent code style compatible with modern Python.
+*   **Automated Checks (pre-commit):** We use `pre-commit` hooks to automatically run Ruff (lint + format), `gitleaks` (secret detection), and general pre-commit checks before each commit. To set up these hooks, run the following commands after `uv sync`:
     ```bash
-    poetry run pre-commit install
+    uv run pre-commit install
     ```
     You can also manually run all hooks on all files with:
     ```bash
-    poetry run pre-commit run --all-files
+    uv run pre-commit run --all-files
     ```
     Please ensure your code passes all these checks before submitting a pull request.
 

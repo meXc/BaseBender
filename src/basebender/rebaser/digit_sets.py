@@ -5,15 +5,14 @@ suggesting digit sets based on input strings.
 It includes caching mechanisms for efficient retrieval of digit set data.
 """
 
-from typing import Dict, List, Optional
+import functools
 
 from .config_loader import get_all_digit_sets
 from .models import DigitSet
 
-_PREDEFINED_DIGIT_SETS_CACHE: Optional[Dict[str, DigitSet]] = None
 
-
-def get_predefined_digit_sets() -> Dict[str, DigitSet]:
+@functools.cache
+def get_predefined_digit_sets() -> dict[str, DigitSet]:
     """
     Returns a dictionary of all loaded predefined digit sets.
 
@@ -26,13 +25,10 @@ def get_predefined_digit_sets() -> Dict[str, DigitSet]:
         A dictionary where keys are unique IDs (e.g., "package:ASCII") and
         values are `DigitSet` objects.
     """
-    global _PREDEFINED_DIGIT_SETS_CACHE  # pylint: disable=global-statement
-    if _PREDEFINED_DIGIT_SETS_CACHE is None:
-        _PREDEFINED_DIGIT_SETS_CACHE = get_all_digit_sets()
-    return _PREDEFINED_DIGIT_SETS_CACHE
+    return get_all_digit_sets()
 
 
-def suggest_digit_sets(input_string: str) -> List[str]:
+def suggest_digit_sets(input_string: str) -> list[str]:
     """
     Suggests predefined digit sets that the `input_string` might belong to.
 
@@ -46,8 +42,11 @@ def suggest_digit_sets(input_string: str) -> List[str]:
         A list of digit set IDs (strings) that are relevant to the input string.
         The list is currently not sophisticatedly ranked beyond basic matching.
     """
+    if not input_string:
+        return []
+
     predefined_digit_sets = get_predefined_digit_sets()
-    suggestions: List[str] = []
+    suggestions: list[str] = []
 
     for digit_set_id, digit_set_info in predefined_digit_sets.items():
         if all(char in digit_set_info.digits for char in input_string):
@@ -66,10 +65,8 @@ def main() -> None:
     print("All Predefined Digit Sets:")
     for example_ds_id, example_ds_info in get_predefined_digit_sets().items():
         print(
-            (
-                f"  {example_ds_id} (Name: {example_ds_info.name}, "
-                f"Source: {example_ds_info.source}): {example_ds_info.digits}"
-            )
+            f"  {example_ds_id} (Name: {example_ds_info.name}, "
+            f"Source: {example_ds_info.source}): {example_ds_info.digits}"
         )
 
     test_string_binary = "010110"  # pylint: disable=invalid-name
@@ -77,30 +74,10 @@ def main() -> None:
     test_string_hex = "DEADBEEF"  # pylint: disable=invalid-name
     test_string_mixed = "Hello World 123"  # pylint: disable=invalid-name
 
-    print(
-        (
-            f"\nSuggestions for '{test_string_binary}': "
-            f"{suggest_digit_sets(test_string_binary)}"
-        )
-    )
-    print(
-        (
-            f"Suggestions for '{test_string_decimal}': "
-            f"{suggest_digit_sets(test_string_decimal)}"
-        )
-    )
-    print(
-        (
-            f"Suggestions for '{test_string_hex}': "
-            f"{suggest_digit_sets(test_string_hex)}"
-        )
-    )
-    print(
-        (
-            f"Suggestions for '{test_string_mixed}': "
-            f"{suggest_digit_sets(test_string_mixed)}"
-        )
-    )
+    print(f"\nSuggestions for '{test_string_binary}': {suggest_digit_sets(test_string_binary)}")
+    print(f"Suggestions for '{test_string_decimal}': {suggest_digit_sets(test_string_decimal)}")
+    print(f"Suggestions for '{test_string_hex}': {suggest_digit_sets(test_string_hex)}")
+    print(f"Suggestions for '{test_string_mixed}': {suggest_digit_sets(test_string_mixed)}")
 
 
 if __name__ == "__main__":

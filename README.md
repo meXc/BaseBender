@@ -1,11 +1,16 @@
 # BaseBender
 
+[![CI](https://github.com/meXc/BaseBender/actions/workflows/ci.yaml/badge.svg)](https://github.com/meXc/BaseBender/actions/workflows/ci.yaml)
+[![PyPI](https://img.shields.io/pypi/v/basebender)](https://pypi.org/project/basebender/)
+[![Python](https://img.shields.io/pypi/pyversions/basebender)](https://pypi.org/project/basebender/)
+[![License](https://img.shields.io/github/license/meXc/BaseBender)](LICENSE)
+
 This project provides a Python module for rebaseing strings between different digit sets (positional number systems). It also includes a command-line interface (CLI) for easy usage.
 
 ![Screenshot of the GUI. Shows example conversion](./docs/gui-main.png)
 
 ## Project Goal
-n
+
 The primary goal is to provide a flexible and efficient tool for rebaseing numbers between different digit sets.
 
 ## Features
@@ -22,45 +27,49 @@ The primary goal is to provide a flexible and efficient tool for rebaseing numbe
 
 ## Installation
 
+### Prerequisites
+
+- Python 3.13+
+- [uv](https://docs.astral.sh/uv/) (fast Python package manager)
+
+### Setup
+
 1.  **Clone the repository**:
     ```bash
     git clone https://github.com/mexc/base-bender.git
     cd base-bender
     ```
 
-2.  **Install Poetry**:
-    If you don't have Poetry installed, follow the instructions on its official website: [https://python-poetry.org/docs/#installation](https://python-poetry.org/docs/#installation)
-
-3.  **Install dependencies using Poetry**:
+2.  **Install dependencies using uv**:
     ```bash
-    poetry install
+    uv sync
     ```
-    This will create a virtual environment and install all project dependencies, including `pytest` and `toml`.
+    This will create a virtual environment and install all project dependencies.
 
-    After installing dependencies, run the update script to generate the GUI asset source files:
-
+3.  **Generate GUI resource files**:
     ```bash
-    ./bin/update
+    uv run bin/generate_resources.py
     ```
+
 ## Running the Application
 
-This project provides several entry points for different interfaces: a command-line interface (CLI), a graphical user interface (GUI), and a web API. You can run them using Poetry scripts:
+This project provides several entry points for different interfaces: a command-line interface (CLI), a graphical user interface (GUI), and a web API. You can run them using uv:
 
 *   **Command-Line Interface (CLI)**:
     ```bash
-    poetry run basebender --help
+    uv run basebender --help
     ```
     This will display the help message for the CLI. For detailed usage examples, refer to [CLI Examples](docs/cli_examples.md).
 
 *   **Graphical User Interface (GUI)**:
     ```bash
-    poetry run basebender-gui
+    uv run basebender-gui
     ```
     This will launch the desktop application.
 
 *   **Web API**:
     ```bash
-    poetry run basebender-api
+    uv run basebender-api
     ```
     This will start the FastAPI server, typically accessible at `http://127.0.0.1:8000`. For detailed API usage examples, refer to [API Examples](docs/api_examples.md).
 
@@ -105,10 +114,10 @@ For detailed API usage examples, refer to [API Examples](docs/api_examples.md).
 
 ## Running Tests
 
-To run the unit tests, use Poetry:
+To run the unit tests, use uv:
 
 ```bash
-poetry run pytest
+uv run pytest
 ```
 
 ## Project Structure
@@ -125,12 +134,10 @@ This project is organized into several key directories and files at the root lev
 *   `.gitattributes`: Configures Git attributes for various paths.
 *   `.gitignore`: Specifies intentionally untracked files to ignore.
 *   `.pre-commit-config.yaml`: Configuration for pre-commit hooks to enforce code quality.
-*   `.pylintrc`: Configuration file for Pylint, a Python static code analysis tool.
 *   `CONTRIBUTING.md`: Guidelines for contributing to the project.
 *   `LICENSE`: The project's license file (MIT License).
 *   `README.md`: The main project README, providing an overview and entry point.
-*   `poetry.lock`: Locks the exact versions of project dependencies.
-*   `pyproject.toml`: Project metadata and dependencies managed by Poetry.
+*   `pyproject.toml`: Project metadata and dependencies managed by uv.
 
 ## Contributing
 

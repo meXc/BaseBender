@@ -9,7 +9,6 @@ interface or an API server.
 import argparse
 import logging
 import sys
-from typing import Optional
 
 import uvicorn
 
@@ -22,9 +21,6 @@ from basebender.rebaser.digit_sets import (
     suggest_digit_sets,
 )
 from basebender.rebaser.models import DigitSet
-
-# Configure logging
-logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
 
 def list_digit_sets_cli() -> int:
@@ -65,9 +61,9 @@ def suggest_digit_sets_cli(input_string: str) -> int:
 
 
 def perform_rebase_cli(
-    input_string: Optional[str],
-    output_digit_set_str: Optional[str],
-    input_digit_set_str: Optional[str],
+    input_string: str | None,
+    output_digit_set_str: str | None,
+    input_digit_set_str: str | None,
 ) -> int:
     """
     Performs the digit set rebase operation and prints the result to the console.
@@ -91,8 +87,8 @@ def perform_rebase_cli(
         return 0
 
     digit_sets_data = get_predefined_digit_sets()
-    input_digit_set_obj: Optional[DigitSet] = None
-    output_digit_set_obj: Optional[DigitSet] = None
+    input_digit_set_obj: DigitSet | None = None
+    output_digit_set_obj: DigitSet | None = None
 
     # Determine input digit set
     if input_digit_set_str:
@@ -183,10 +179,7 @@ def main() -> None:
         "-l",
         "--list-digit-sets",
         action="store_true",
-        help=(
-            "List all available pre-defined digit sets loaded from "
-            "configuration files."
-        ),
+        help=("List all available pre-defined digit sets loaded from configuration files."),
     )
     parser.add_argument(
         "-s",
@@ -205,10 +198,7 @@ def main() -> None:
     parser.add_argument(
         "--api",
         action="store_true",
-        help=(
-            "Start the FastAPI server, providing a web API for rebase "
-            "operations."
-        ),
+        help=("Start the FastAPI server, providing a web API for rebase operations."),
     )
 
     args = parser.parse_args()
@@ -218,9 +208,7 @@ def main() -> None:
         run_gui()
     elif args.api:
         # Ensure the API module is importable from the current directory
-        uvicorn.run(
-            "basebender.api.main:APP", host="0.0.0.0", port=8000, reload=True
-        )
+        uvicorn.run("basebender.api.main:APP", host="0.0.0.0", port=8000, reload=True)
     elif args.list_digit_sets:
         exit_code = list_digit_sets_cli()
     elif args.suggest_digit_sets:
@@ -228,16 +216,11 @@ def main() -> None:
     else:
         # If no specific action (list, suggest, gui, api) is requested, rebase
         if args.input_string is None and not (
-            args.list_digit_sets
-            or args.suggest_digit_sets
-            or args.gui
-            or args.api
+            args.list_digit_sets or args.suggest_digit_sets or args.gui or args.api
         ):
             parser.error(
-                (
-                    "input_string is required for rebase when not using "
-                    "--list-digit-sets, --suggest-digit-sets, --gui, or --api."
-                )
+                "input_string is required for rebase when not using "
+                "--list-digit-sets, --suggest-digit-sets, --gui, or --api."
             )
         exit_code = perform_rebase_cli(
             args.input_string, args.output_digit_set, args.input_digit_set

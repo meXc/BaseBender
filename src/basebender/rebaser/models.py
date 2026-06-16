@@ -26,3 +26,13 @@ class DigitSet:
     name: str
     digits: str
     source: str
+
+    @staticmethod
+    def deduplicate_digits(digits: str) -> str:
+        """Removes duplicate characters while preserving order of first appearance."""
+        return "".join(dict.fromkeys(digits))
+
+    @staticmethod
+    def sorted_digits(digits: str) -> str:
+        """Sorts characters alphabetically."""
+        return "".join(sorted(digits))

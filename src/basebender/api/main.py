@@ -5,7 +5,7 @@ It provides endpoints for listing available digit sets and rebaseing text
 between different digit sets.
 """
 
-from typing import Dict, List, Optional
+import functools
 
 import uvicorn
 from fastapi import FastAPI, HTTPException
@@ -19,31 +19,21 @@ from basebender.rebaser.models import DigitSet
 APP = FastAPI(
     title="BaseBender API",
     description=(
-        "API for rebaseing text between different digit sets and "
-        "listing available digit sets."
+        "API for rebaseing text between different digit sets and listing available digit sets."
     ),
     version="1.0.0",
 )
 
-# Cache for digit sets to avoid reloading for every request
-_DIGIT_SET_DATA: Optional[Dict[str, DigitSet]] = None
 
-
-def _load_digit_set_data() -> Dict[str, DigitSet]:
+@functools.cache
+def _load_digit_set_data() -> dict[str, DigitSet]:
     """
     Loads and caches predefined digit set data.
-
-    This function retrieves the predefined digit sets and caches them
-    in the `_DIGIT_SET_DATA` module-level variable to avoid redundant
-    loading on subsequent calls.
 
     Returns:
         A dictionary mapping digit set IDs to DigitSet objects.
     """
-    global _DIGIT_SET_DATA  # pylint: disable=global-statement
-    if _DIGIT_SET_DATA is None:
-        _DIGIT_SET_DATA = get_predefined_digit_sets()
-    return _DIGIT_SET_DATA
+    return get_predefined_digit_sets()
 
 
 @APP.get("/", include_in_schema=False)
@@ -76,16 +66,16 @@ class DigitSetInfo(BaseModel):
 
 @APP.get(
     "/digitsets",
-    response_model=List[DigitSetInfo],
+    response_model=list[DigitSetInfo],
     summary="List all available digit sets",
 )
-async def list_digit_sets() -> List[DigitSetInfo]:
+async def list_digit_sets() -> list[DigitSetInfo]:
     """
     Retrieves a list of all available digit sets, including their unique IDs,
     names, digits, and source.
     """
     digit_sets = _load_digit_set_data()
-    digit_set_list: List[DigitSetInfo] = []
+    digit_set_list: list[DigitSetInfo] = []
     for digit_set_id, digit_set_info in digit_sets.items():
         digit_set_list.append(
             DigitSetInfo(
@@ -112,11 +102,11 @@ class RebaseRequest(BaseModel):
         target_digit_set_id: An optional ID of a predefined target digit set.
     """
 
-    input_text: Optional[str] = ""
-    source_digit_set: Optional[str] = None
-    source_digit_set_id: Optional[str] = None
-    target_digit_set: Optional[str] = None
-    target_digit_set_id: Optional[str] = None
+    input_text: str | None = ""
+    source_digit_set: str | None = None
+    source_digit_set_id: str | None = None
+    target_digit_set: str | None = None
+    target_digit_set_id: str | None = None
 
 
 class ErrorResponse(BaseModel):
@@ -129,7 +119,7 @@ class ErrorResponse(BaseModel):
     """
 
     message: str
-    detail: Optional[str] = None
+    detail: str | None = None
 
 
 class RebaseResponse(BaseModel):
@@ -148,7 +138,7 @@ class RebaseResponse(BaseModel):
     rebased_text: str
     source_digit_set_used: str
     target_digit_set_used: str
-    error: Optional[ErrorResponse] = None
+    error: ErrorResponse | None = None
 
 
 @APP.post(
@@ -169,11 +159,9 @@ async def rebase_text(request: RebaseRequest) -> RebaseResponse:
     """
     digit_sets_data = _load_digit_set_data()
 
-    input_text: str = (
-        request.input_text if request.input_text is not None else ""
-    )
-    source_digit_set_obj: Optional[DigitSet] = None
-    target_digit_set_obj: Optional[DigitSet] = None
+    input_text: str = request.input_text if request.input_text is not None else ""
+    source_digit_set_obj: DigitSet | None = None
+    target_digit_set_obj: DigitSet | None = None
     source_digit_set_name: str = "Dynamically Derived"
     target_digit_set_name: str = "Echo Input"
 
@@ -191,9 +179,7 @@ async def rebase_text(request: RebaseRequest) -> RebaseResponse:
                 detail=ErrorResponse(
                     message="Invalid Source Digit Set ID",
                     detail=(
-                        "Source digit set with ID "
-                        f"'{request.source_digit_set_id}' "
-                        "not found."
+                        f"Source digit set with ID '{request.source_digit_set_id}' not found."
                     ),
                 ).model_dump(),
             ) from None
@@ -213,16 +199,14 @@ async def rebase_text(request: RebaseRequest) -> RebaseResponse:
                 detail=ErrorResponse(
                     message="Invalid Target Digit Set ID",
                     detail=(
-                        "Target digit set with ID "
-                        f"'{request.target_digit_set_id}' "
-                        "not found."
+                        f"Target digit set with ID '{request.target_digit_set_id}' not found."
                     ),
                 ).model_dump(),
             ) from None
         target_digit_set_name = target_digit_set_obj.name
 
     rebased_text: str = ""
-    error_response: Optional[ErrorResponse] = None
+    error_response: ErrorResponse | None = None
 
     try:
         rebaser = DigitSetRebaser(
@@ -235,26 +219,20 @@ async def rebase_text(request: RebaseRequest) -> RebaseResponse:
             message="Rebase Error",
             detail=f"A value error occurred during rebase: {exc}",
         )
-        raise HTTPException(
-            status_code=400, detail=error_response.model_dump()
-        ) from exc
+        raise HTTPException(status_code=400, detail=error_response.model_dump()) from exc
     except IndexError as exc:
         error_response = ErrorResponse(
             message="Rebase Error",
             detail=f"An index error occurred during rebase: {exc}",
         )
-        raise HTTPException(
-            status_code=400, detail=error_response.model_dump()
-        ) from exc
+        raise HTTPException(status_code=400, detail=error_response.model_dump()) from exc
     except Exception as exc:  # pylint: disable=broad-exception-caught
         # Catching broad exception as an isolation point for unexpected errors.
         error_response = ErrorResponse(
             message="Internal Server Error",
             detail=f"An unexpected error occurred: {exc}",
         )
-        raise HTTPException(
-            status_code=500, detail=error_response.model_dump()
-        ) from exc
+        raise HTTPException(status_code=500, detail=error_response.model_dump()) from exc
 
     return RebaseResponse(
         rebased_text=rebased_text,
@@ -268,6 +246,4 @@ def start_api() -> None:
     """
     Starts the FastAPI server using uvicorn.
     """
-    uvicorn.run(
-        "basebender.api.main:APP", host="0.0.0.0", port=8000, reload=True
-    )
+    uvicorn.run("basebender.api.main:APP", host="0.0.0.0", port=8000, reload=True)

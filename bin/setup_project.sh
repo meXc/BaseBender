@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Check for Python version
-PYTHON_MIN_VERSION="3.12"
+PYTHON_MIN_VERSION="3.14"
 PYTHON_CURRENT_VERSION=$(python3 -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')
 
 if printf '%s\n' "$PYTHON_MIN_VERSION" "$PYTHON_CURRENT_VERSION" | sort -V -C; then
@@ -12,23 +12,23 @@ else
     exit 1
 fi
 
-# Check for Poetry installation
-if ! command -v poetry &> /dev/null
+# Check for uv installation
+if ! command -v uv &> /dev/null
 then
-    echo "Poetry is not installed. Installing Poetry..."
-    curl -sSL https://install.python-poetry.org | python3 -
+    echo "uv is not installed. Installing uv..."
+    curl -LsSf https://astral.sh/uv/install.sh | sh
     if [ $? -ne 0 ]; then
-        echo "Error: Failed to install Poetry. Please install it manually."
+        echo "Error: Failed to install uv. Please install it manually: https://docs.astral.sh/uv/"
         exit 1
     fi
-    echo "Poetry installed successfully."
+    echo "uv installed successfully."
 else
-    echo "Poetry is already installed."
+    echo "uv is already installed."
 fi
 
 # Install project dependencies
-echo "Installing project dependencies with Poetry..."
-poetry install
+echo "Installing project dependencies with uv..."
+uv sync
 if [ $? -ne 0 ]; then
     echo "Error: Failed to install project dependencies."
     exit 1
@@ -37,7 +37,7 @@ echo "Project dependencies installed successfully."
 
 # Install pre-commit hooks
 echo "Installing pre-commit hooks..."
-poetry run pre-commit install
+uv run pre-commit install
 if [ $? -ne 0 ]; then
     echo "Error: Failed to install pre-commit hooks."
     exit 1

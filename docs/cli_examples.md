@@ -13,13 +13,13 @@ The `DigitSetRebaser` class offers flexible rebaseing based on the provided digi
 Rebase `input_string` from `input_digit_set` to `output_digit_set`. This is the standard base rebaseing behavior.
 
 ```bash
-poetry run python cli.py "input_string_to_rebase" "output_digit_set_string" "input_digit_set_string"
+poetry run basebender "input_string_to_rebase" "output_digit_set_string" "input_digit_set_string"
 ```
 
 **Example**: Rebase "hello" from standard alphabet to a custom alphabet.
 
 ```bash
-poetry run python cli.py "hello" "zyxwuvtsrqponmlkjihgfedcba" "abcdefghijklmnopqrstuvwxyz"
+poetry run basebender "hello" "zyxwuvtsrqponmlkjihgfedcba" "abcdefghijklmnopqrstuvwxyz"
 ```
 
 #### 2. Output Digit Set Only (Input Digit Set Derived from Input String)
@@ -27,13 +27,13 @@ poetry run python cli.py "hello" "zyxwuvtsrqponmlkjihgfedcba" "abcdefghijklmnopq
 If only the `output_digit_set` is provided (and `input_digit_set` is omitted), the input digit set will be dynamically derived from the unique digits present in the `input_string` itself.
 
 ```bash
-poetry run python cli.py "input_string_to_rebase" "output_digit_set_string"
+poetry run basebender "input_string_to_rebase" "output_digit_set_string"
 ```
 
 **Example**: Rebase "101" (binary, derived from input) to decimal.
 
 ```bash
-poetry run python cli.py "101" "0123456789"
+poetry run basebender "101" "0123456789"
 # Output: Rebased string: 5
 ```
 
@@ -42,12 +42,12 @@ poetry run python cli.py "101" "0123456789"
 If only the `input_digit_set` is provided (and `output_digit_set` is omitted), the `rebase` method will return the `input_string` with any digits not present in the `input_digit_set` removed.
 
 ```bash
-poetry run python cli.py "input_string_to_rebase" "" "input_digit_set_string"
+poetry run basebender "input_string_to_rebase" "" "input_digit_set_string"
 ```
 
 **Example**: Rebase "hello world!" using only the "abcdefghijklmnopqrstuvwxyz" digit set.
 ```bash
-poetry run python cli.py "hello world!" "" "abcdefghijklmnopqrstuvwxyz"
+poetry run basebender "hello world!" "" "abcdefghijklmnopqrstuvwxyz"
 # Output: Rebased string: helloworld
 ```
 
@@ -56,10 +56,10 @@ poetry run python cli.py "hello world!" "" "abcdefghijklmnopqrstuvwxyz"
 If neither `output_digit_set` nor `input_digit_set` is provided, the `rebase` method will simply return the `input_string` as is.
 
 ```bash
-poetry run python cli.py "input_string_to_rebase"
+poetry run basebender "input_string_to_rebase"
 ```
 
 **Example**:
 ```bash
-poetry run python cli.py "test"
+poetry run basebender "test"
 # Output: Rebased string: test
